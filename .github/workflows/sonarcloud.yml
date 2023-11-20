@@ -1,0 +1,27 @@
+name: sonarcloud
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sonarcloud:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.17.0'
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        run: npm install
+      - name: Test and coverage
+        run: npm run test:cov
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
