@@ -1,3 +1,4 @@
+import * as bluebirdPromise from 'bluebird';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -21,9 +22,9 @@ export class PluginTraverser {
       this._directories = pluginModuleOptions.directories;
   }
 
-  public traverseDirectories(): Array<Provider<BasePlugin>> {
-    let modules = [];
-    this._directories.forEach((parentDirectory) => {
+  public async traverseDirectories(): Promise<Array<Provider<BasePlugin>>> {
+    const modules = [];
+    await bluebirdPromise.each(this._directories, (parentDirectory) => {
       if (fs.existsSync(parentDirectory)) {
         fs.readdirSync(parentDirectory, { withFileTypes: true })
           .filter((dirent) => dirent.isDirectory())
@@ -32,10 +33,9 @@ export class PluginTraverser {
             this.packageJsonExists(parentDirectory, directoryName),
           )
           .forEach((directoryName) => {
-            modules = [
-              ...modules,
+            modules.push(
               ...this.processDirectory(parentDirectory, directoryName),
-            ];
+            );
           });
       }
     });
