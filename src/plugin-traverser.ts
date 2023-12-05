@@ -24,22 +24,29 @@ export class PluginTraverser {
 
   public async traverseDirectories(): Promise<Array<Provider<BasePlugin>>> {
     const modules = [];
-    await bluebirdPromise.mapSeries(this._directories, (parentDirectory) => {
-      if (fs.statSync(parentDirectory)) {
-        fs.readdirSync(parentDirectory, { withFileTypes: true })
-          .filter((dirent) => dirent.isDirectory())
-          .map((dirent) => dirent.name)
-          .filter((directoryName) =>
-            this.packageJsonExists(parentDirectory, directoryName),
-          )
-          .forEach((directoryName) => {
-            modules.push(
-              ...this.processDirectory(parentDirectory, directoryName),
+    await bluebirdPromise.mapSeries(
+      this._directories,
+      async (parentDirectory) => {
+        const stat = await fs.promises.stat(parentDirectory);
+        if (stat.isDirectory())
+          return await fs.promises
+            .readdir(parentDirectory, { withFileTypes: true })
+            .then((dirents) =>
+              dirents
+                .filter((dirent) => dirent.isDirectory())
+                .map((dirent) => dirent.name)
+                .filter((directoryName) =>
+                  this.packageJsonExists(parentDirectory, directoryName),
+                )
+                .forEach((directoryName) => {
+                  modules.push(
+                    ...this.processDirectory(parentDirectory, directoryName),
+                  );
+                }),
             );
-          });
-      }
-      return parentDirectory;
-    });
+        return parentDirectory;
+      },
+    );
     return modules;
   }
 
