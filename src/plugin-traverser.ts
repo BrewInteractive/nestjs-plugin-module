@@ -36,13 +36,15 @@ export class PluginTraverser {
                 .filter((dirent) => dirent.isDirectory())
                 .map((dirent) => dirent.name)
                 .filter((directoryName) =>
-                  this.packageJsonExists(parentDirectory, directoryName),
-                )
-                .forEach((directoryName) => {
-                  modules.push(
-                    ...this.processDirectory(parentDirectory, directoryName),
-                  );
-                }),
+                  this.isPluginDirectory(parentDirectory, directoryName),
+                ),
+            )
+            .then((directoryNames) =>
+              directoryNames.forEach((directoryName) => {
+                modules.push(
+                  ...this.processDirectory(parentDirectory, directoryName),
+                );
+              }),
             );
         return parentDirectory;
       },
@@ -50,20 +52,28 @@ export class PluginTraverser {
     return modules;
   }
 
+  private isPluginDirectory(
+    parentDirectory: string,
+    directoryName: string,
+  ): boolean {
+    if (this.packageJsonExists(parentDirectory, directoryName)) {
+      const packageJsonPath = this.createPackageJsonPath(
+        parentDirectory,
+        directoryName,
+      );
+      if (this.isPluginModule(this.parsePackageJson(packageJsonPath)))
+        return true;
+    }
+    return false;
+  }
+
   private processDirectory(
     parentDirectory: string,
     directoryName: string,
   ): Array<BasePlugin> {
-    const packageJsonPath = this.createPackageJsonPath(
-      parentDirectory,
-      directoryName,
+    return this.importModule(
+      this.createModulePath(parentDirectory, directoryName),
     );
-    if (this.isPluginModule(this.parsePackageJson(packageJsonPath))) {
-      return this.importModule(
-        this.createModulePath(parentDirectory, directoryName),
-      );
-    }
-    return [];
   }
 
   private packageJsonExists(
