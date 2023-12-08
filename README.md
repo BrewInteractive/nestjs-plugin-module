@@ -18,9 +18,10 @@
 
 ## Purpose
 
-This package is developed for use in NestJS projects. The purpose of the application is to provide plugin support for NestJS projects. Areas within the project where plugins can be written are identified, and later, plugins can be developed for these areas using the package.
+This package is developed for use in NestJS projects. The purpose of the module is to provide plugin support for NestJS projects. Areas within the project where plugins can be written are identified, and later, plugins can be developed for these areas using the package.
 
 ## Documents
+
 - [Plugin Module Installation](https://github.com/BrewInteractive/nestjs-plugin-module/blob/main/docs/installation.md)
 - [Plugin Development](https://github.com/BrewInteractive/nestjs-plugin-module/blob/main/docs/plugin-development.md)
 
