@@ -2,7 +2,7 @@
 
 Since the `Plugin Module` is written with NestJS technology, the plugin should also be developed using NestJS.
 
-## Plugin Requirements
+## Plugin Requirements
 
 While creating the plugin we need to provide the necessary parameters. Example plugin settings that we must provide in plugin's `package.json` as follows:
 
