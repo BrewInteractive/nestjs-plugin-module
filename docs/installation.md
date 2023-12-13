@@ -19,7 +19,6 @@ In the initial stage, the plugin module needs to be imported into the app.module
 | Parameter Name            | Description                                                                                                                                                                        | Required | Default                |
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------- |
 | imports                   | The plugin should be imported for the service or module for which the plugin will be written.                                                                                      | NO       | -                      |
-| pluginType                | To detect project-specific plugins and potentially introduce errors by including a plugin from another project, plugins are customized with this parameter.                        | YES      | -                      |
 | directories               | It is used to customize the directory where plugins should be searched for.                                                                                                        | No       | node_modules           |
 
 In the example below, it searches and detects plugins specific to the `example-app` type under `node_modules` and includes them in the system. Plugins can only be written for the services defined within `PluginExampleModule`.
@@ -34,8 +33,7 @@ import { PluginExampleModule } from "./plugin-example/plugin-example.module";
 @Module({
   imports: [
     PluginModule.registerAsync({
-      imports: [forwardRef(() => PluginExampleModule),],
-      pluginType: "example-app",
+      imports: [forwardRef(() => PluginExampleModule),]
     }),
   ],
   providers: [AppService],
