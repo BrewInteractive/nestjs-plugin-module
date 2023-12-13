@@ -8,52 +8,54 @@ While creating the plugin we need to provide the necessary parameters. Example p
 
 ```json
 {
-	...
-	"pluginModule": {
-		"name": "hello-world-overrider",
-		"type": "example-app",
-		"displayName": "Hello World Overrider"
-	},
-	...
+ ...
+ "pluginModule": {
+  "name": "hello-world-overrider",
+  "displayName": "Hello World Overrider"
+ },
+ ...
 }
 ```
 
-| Variable Name | Description                                                                                              |
-| ------------- | -------------------------------------------------------------------------------------------------------- |
-| name          | This key is the plugin name. It can be used as.                                                          |
-| type          | This key contains the value "plugin" and specifies that the package is an nestjs-plugin-module plugin.   |
-| displayName   | This key is the human readable name of the plugin.                                                       |
-
+| Variable Name | Description                                              |
+| ------------- | -------------------------------------------------------- |
+| name          | The name field represents the folder name of the plugin. |
+| displayName   | This key is the human readable name of the plugin.       |
 
 The project you write a plugin for needs to be added to the plugin as a package. Plugin development is based on dependency injection feature of NestJS.
 
 ```json
 {
-	...
-	"peerDependencies": {
-		"example-service": "^1.0.0"
-	}
-	...
+ ...
+ "peerDependencies": {
+  "example-service": "^1.0.0"
+ }
+ ...
 }
 ```
 
 ## Creating Plugins
 
+> [!NOTE]  
+> When developing a plugin, the `index.ts` file added to the root directory is read to instantiate the added class. Within this plugin, you can leave multiple functionalities by adding multiple classes or performing multiple operations associated with the same class.
+
 The manipulation of the `getHello` and `getHelloWord` methods within the `PluginExampleService` defined in `PluginExampleModule` is exemplified.
 
 ```ts
-import { Module } from "@nestjs/common";
-import { PluginExampleService } from "./plugin-example.service";
+import { Module } from '@nestjs/common';
+import { PluginExampleService } from './plugin-example.service';
 
 @Module({
-  providers: [{ provide: "PluginExampleService", useClass: PluginExampleService }],
-  exports: ["PluginExampleService"],
+  providers: [
+    { provide: 'PluginExampleService', useClass: PluginExampleService },
+  ],
+  exports: ['PluginExampleService'],
 })
 export class PluginExampleModule {}
 ```
 
 ```ts
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 
 @Injectable({})
 export class PluginExampleService {
@@ -62,11 +64,11 @@ export class PluginExampleService {
     this.textsToAppend = [];
   }
   getHello(): string {
-    return this.getHelloWorld() + this.textsToAppend.join(" ");
+    return this.getHelloWorld() + this.textsToAppend.join(' ');
   }
 
   getHelloWorld(): string {
-    return "Hello World!";
+    return 'Hello World!';
   }
 
   appendText(text: string): void {
@@ -75,27 +77,29 @@ export class PluginExampleService {
 }
 ```
 
-### Method Override Example
+### Examples
+
+#### Overriding A Method
 
 You can override a function and manipulate its intended operation, assigning its return value as desired.
 
 ```ts
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from '@nestjs/common';
 
-import { BasePlugin } from "nestjs-pugin-module";
-import { PluginExampleService } from "example-service";
-import { pluginModule } from "../package.json";
+import { BasePlugin } from 'nestjs-pugin-module';
+import { PluginExampleService } from 'example-service';
+import { pluginModule } from '../package.json';
 
 @Injectable()
 export class HelloWorldOverriderPlugin extends BasePlugin {
-  @Inject("PluginExampleService")
+  @Inject('PluginExampleService')
   private pluginExampleService: PluginExampleService;
   constructor() {
     super(pluginModule);
   }
 
   private getHelloWorld(): string {
-    return "Hello World overriden!";
+    return 'Hello World overriden!';
   }
 
   async load(): Promise<void> {
@@ -105,27 +109,27 @@ export class HelloWorldOverriderPlugin extends BasePlugin {
 }
 ```
 
-### Method Appender Example
+#### Calling A Method
 
-It is possible to manipulate any operation within the method. In the example below, data transfer to the variable textsToAppend is facilitated using the appendText method. The transferred data is then added to the return value within the getHello method.
+It is possible to call any method in the service which is manipulating. In the example below, data transfer to the variable textsToAppend is facilitated using the appendText method. The transferred data is then added to the return value within the getHello method.
 
 ```ts
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from '@nestjs/common';
 
-import { BasePlugin } from "nestjs-pugin-module";
-import { PluginExampleService } from "example-service";
-import { pluginModule } from "../package.json";
+import { BasePlugin } from 'nestjs-pugin-module';
+import { PluginExampleService } from 'example-service';
+import { pluginModule } from '../package.json';
 
 @Injectable()
 export class HelloWorldOverriderPlugin extends BasePlugin {
-  @Inject("PluginExampleService")
+  @Inject('PluginExampleService')
   private pluginExampleService: PluginExampleService;
   constructor() {
     super(pluginModule);
   }
 
   async load(): Promise<void> {
-    this.pluginTestService.appendText("Text Example");
+    this.pluginTestService.appendText('Text Example');
     return Promise.resolve();
   }
 }
