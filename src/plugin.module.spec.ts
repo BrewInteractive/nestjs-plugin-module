@@ -7,11 +7,7 @@ describe('PluginModule', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        PluginModule.registerAsync({
-          pluginType: 'app-service',
-        }),
-      ],
+      imports: [PluginModule.registerAsync({})],
     }).compile();
   });
 

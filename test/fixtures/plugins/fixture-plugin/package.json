@@ -1,7 +1,6 @@
 {
   "pluginModule": {
     "name": "fixture-plugin",
-    "displayName": "Fixture Plugin",
-    "type": "app-service"
+    "displayName": "Fixture Plugin"
   }
 }

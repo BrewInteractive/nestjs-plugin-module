@@ -5,7 +5,6 @@ export class PluginFixture extends BasePlugin {
     super({
       name: 'plugin-fixture',
       displayName: 'plugin-fixture',
-      type: 'app-service',
     });
   }
 

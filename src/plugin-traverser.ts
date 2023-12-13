@@ -10,11 +10,9 @@ import { Provider } from '@nestjs/common';
 const node_modules = require('node_modules-path');
 
 export class PluginTraverser {
-  private _pluginType: string;
   private _directories: Array<string> = [path.resolve(node_modules())];
 
   constructor(pluginModuleOptions: PluginModuleOptions) {
-    this._pluginType = pluginModuleOptions.pluginType;
     if (
       pluginModuleOptions.directories &&
       pluginModuleOptions.directories.length > 0
@@ -105,7 +103,6 @@ export class PluginTraverser {
   }): boolean {
     return (
       packageJson.pluginModule &&
-      packageJson.pluginModule.type === this._pluginType &&
       packageJson.pluginModule.name !== undefined &&
       packageJson.pluginModule.displayName !== undefined
     );
