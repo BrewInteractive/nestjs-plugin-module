@@ -11,7 +11,6 @@ While creating the plugin we need to provide the necessary parameters. Example p
 	...
 	"pluginModule": {
 		"name": "hello-world-overrider",
-		"type": "example-app",
 		"displayName": "Hello World Overrider"
 	},
 	...
@@ -20,8 +19,7 @@ While creating the plugin we need to provide the necessary parameters. Example p
 
 | Variable Name | Description                                                                                              |
 | ------------- | -------------------------------------------------------------------------------------------------------- |
-| name          | This key is the plugin name. It can be used as.                                                          |
-| type          | This key contains the value "plugin" and specifies that the package is an nestjs-plugin-module plugin.   |
+| name          | The name field represents the folder name of the plugin.                                                         |
 | displayName   | This key is the human readable name of the plugin.                                                       |
 
 
@@ -38,6 +36,9 @@ The project you write a plugin for needs to be added to the plugin as a package.
 ```
 
 ## Creating Plugins
+
+> [!NOTE]  
+> When developing a plugin, the `index.ts` file added to the root directory is read to instantiate the added class. Within this plugin, you can leave multiple functionalities by adding multiple classes or performing multiple operations associated with the same class.
 
 The manipulation of the `getHello` and `getHelloWord` methods within the `PluginExampleService` defined in `PluginExampleModule` is exemplified.
 
