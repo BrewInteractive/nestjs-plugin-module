@@ -8,12 +8,12 @@ While creating the plugin we need to provide the necessary parameters. Example p
 
 ```json
 {
-	...
-	"pluginModule": {
-		"name": "hello-world-overrider",
-		"displayName": "Hello World Overrider"
-	},
-	...
+ ...
+ "pluginModule": {
+  "name": "hello-world-overrider",
+  "displayName": "Hello World Overrider"
+ },
+ ...
 }
 ```
 
@@ -26,11 +26,11 @@ The project you write a plugin for needs to be added to the plugin as a package.
 
 ```json
 {
-	...
-	"peerDependencies": {
-		"example-service": "^1.0.0"
-	}
-	...
+ ...
+ "peerDependencies": {
+  "example-service": "^1.0.0"
+ }
+ ...
 }
 ```
 
@@ -77,7 +77,9 @@ export class PluginExampleService {
 }
 ```
 
-### Method Override Example
+### Examples
+
+#### Overriding A Method
 
 You can override a function and manipulate its intended operation, assigning its return value as desired.
 
@@ -107,9 +109,9 @@ export class HelloWorldOverriderPlugin extends BasePlugin {
 }
 ```
 
-### Method Appender Example
+#### Calling A Method
 
-It is possible to manipulate any operation within the method. In the example below, data transfer to the variable textsToAppend is facilitated using the appendText method. The transferred data is then added to the return value within the getHello method.
+It is possible to call any method in the service which is manipulating. In the example below, data transfer to the variable textsToAppend is facilitated using the appendText method. The transferred data is then added to the return value within the getHello method.
 
 ```ts
 import { Inject, Injectable } from '@nestjs/common';

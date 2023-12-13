@@ -4,11 +4,11 @@
 
 In a NestJS project, it is possible to use the [Plugin Module](https://www.npmjs.com/package/@brewww/nestjs-plugin-module) package by installing it. This method allows you to use custom plugins you have written to customize the project.
 
-```
+```bash
 npm i @brewww/nestjs-plugin-module --save
 ```
 
-```
+```bash
 yarn add @brewww/nestjs-plugin-module
 ```
 
