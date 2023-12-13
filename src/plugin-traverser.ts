@@ -102,9 +102,8 @@ export class PluginTraverser {
     pluginModule: PluginOptions;
   }): boolean {
     return (
-      packageJson.pluginModule &&
-      packageJson.pluginModule.name !== undefined &&
-      packageJson.pluginModule.displayName !== undefined
+      packageJson.pluginModule?.name !== undefined &&
+      packageJson.pluginModule?.displayName !== undefined
     );
   }
 
