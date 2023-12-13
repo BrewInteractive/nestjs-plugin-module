@@ -16,7 +16,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "release": "release-it"
   },
   "dependencies": {
     "bluebird": "^3.7.2",
@@ -42,6 +43,7 @@
     "path": "^0.12.7",
     "prettier": "^3.0.0",
     "reflect-metadata": "^0.1.13",
+    "release-it": "^17.0.1",
     "rxjs": "^7.8.1",
     "source-map-support": "^0.5.21",
     "supertest": "^6.3.3",
@@ -67,5 +69,10 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "release-it": {
+    "github": {
+      "release": true
+    }
   }
 }
