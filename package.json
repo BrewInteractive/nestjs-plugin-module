@@ -4,6 +4,7 @@
   "description": "",
   "author": "",
   "license": "UNLICENSED",
+  "private": false,
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
