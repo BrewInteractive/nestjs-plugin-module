@@ -87,5 +87,8 @@
   "bugs": {
     "url": "https://github.com/BrewInteractive/nestjs-plugin-module/issues"
   },
-  "homepage": "https://github.com/BrewInteractive/nestjs-plugin-module#readme"
+  "homepage": "https://github.com/BrewInteractive/nestjs-plugin-module#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }
