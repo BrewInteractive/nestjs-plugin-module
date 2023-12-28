@@ -29,11 +29,15 @@ import { AppService } from './app.service';
 import { Module } from '@nestjs/common';
 import { PluginModule } from '@brewww/nestjs-plugin-module';
 import { PluginExampleModule } from './plugin-example/plugin-example.module';
+import * as path from "path";
+const node_modules = require('node_modules-path');
 
 @Module({
   imports: [
     PluginModule.registerAsync({
       imports: [forwardRef(() => PluginExampleModule)],
+      // If you wish to specify custom plugin directory paths, here is an example.
+      directories: [path.resolve(node_modules()), path.join(__dirname, "./plugins")]
     }),
   ],
   providers: [AppService],
