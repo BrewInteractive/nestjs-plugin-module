@@ -2,10 +2,11 @@ import * as bluebirdPromise from 'bluebird';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { Provider, Type } from '@nestjs/common';
+
 import { BasePlugin } from './abstract/base-plugin.plugin';
 import { PluginModuleOptions } from './interfaces/plugin-module-options.interface';
 import { PluginOptions } from './interfaces/plugin-options.interface';
-import { Provider, Type } from '@nestjs/common';
 
 const node_modules = require('node_modules-path');
 
@@ -20,37 +21,39 @@ export class PluginTraverser {
       this._directories = pluginModuleOptions.directories;
   }
 
-  public async traverseDirectories(): Promise<Array<Provider<BasePlugin>>> {
+  public async traverseDirectoriesAsync(): Promise<
+    Array<Provider<BasePlugin>>
+  > {
     const modules = [];
     await bluebirdPromise.mapSeries(
       this._directories,
-      async (parentDirectory) => {
-        await this.exploreDirectory(parentDirectory, modules);
+      async (parentDirectoryPath) => {
+        if ((await fs.promises.stat(parentDirectoryPath)).isDirectory())
+          await this.exploreDirectoryAsync(parentDirectoryPath, modules);
       },
     );
     return modules;
   }
 
-  private async exploreDirectory(
-    directory: string,
+  private async exploreDirectoryAsync(
+    directoryPath: string,
     modules: Array<Provider<BasePlugin>>,
   ): Promise<void> {
-    const stat = await fs.promises.stat(directory);
-    if (!stat.isDirectory()) {
+    if (this.isPluginDirectory(directoryPath, '')) {
+      modules.push(...this.processDirectory(directoryPath, ''));
       return;
     }
 
-    const dirents = await fs.promises.readdir(directory, {
+    const dirents = await fs.promises.readdir(directoryPath, {
       withFileTypes: true,
     });
+
     for (const dirent of dirents) {
       if (dirent.isDirectory()) {
-        const subdir = path.join(directory, dirent.name);
-        if (await this.isPluginDirectory(directory, dirent.name)) {
-          modules.push(...this.processDirectory(directory, dirent.name));
-        } else {
-          await this.exploreDirectory(subdir, modules);
-        }
+        const subdir = path.join(directoryPath, dirent.name);
+        if (this.isPluginDirectory(directoryPath, dirent.name))
+          modules.push(...this.processDirectory(directoryPath, dirent.name));
+        else await this.exploreDirectoryAsync(subdir, modules);
       }
     }
   }

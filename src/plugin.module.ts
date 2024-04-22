@@ -12,7 +12,7 @@ export class PluginModule {
   ): Promise<DynamicModule> {
     const pluginTraverser = new PluginTraverser(pluginModuleOptions);
     const pluginTypes: Array<Provider<BasePlugin>> =
-      await pluginTraverser.traverseDirectories();
+      await pluginTraverser.traverseDirectoriesAsync();
 
     return {
       module: PluginModule,
