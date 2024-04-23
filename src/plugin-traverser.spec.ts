@@ -11,7 +11,19 @@ describe('PluginTraverser', () => {
     const pluginTraverser = new PluginTraverser(mockPluginModuleOptions);
     const result = await pluginTraverser.traverseDirectoriesAsync();
 
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(3);
+  });
+
+  it('Should import plugin modules correctly.', async () => {
+    const mockPluginModuleOptions: PluginModuleOptions = {
+      directories: [
+        path.join(__dirname, '../test/fixtures/plugins/fixture-plugin'),
+      ],
+    };
+    const pluginTraverser = new PluginTraverser(mockPluginModuleOptions);
+    const result = await pluginTraverser.traverseDirectoriesAsync();
+
+    expect(result).toHaveLength(1);
   });
 
   it('Should traverse multiple directories and import modules correctly.', async () => {
@@ -21,7 +33,7 @@ describe('PluginTraverser', () => {
     const pluginTraverser = new PluginTraverser(mockPluginModuleOptions);
     const result = await pluginTraverser.traverseDirectoriesAsync();
 
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(3);
   });
 
   it('Should traverse directories and import modules correctly. (node_modules)', async () => {
