@@ -2,10 +2,11 @@ import * as bluebirdPromise from 'bluebird';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { Provider, Type } from '@nestjs/common';
+
 import { BasePlugin } from './abstract/base-plugin.plugin';
 import { PluginModuleOptions } from './interfaces/plugin-module-options.interface';
 import { PluginOptions } from './interfaces/plugin-options.interface';
-import { Provider } from '@nestjs/common';
 
 const node_modules = require('node_modules-path');
 
@@ -20,34 +21,41 @@ export class PluginTraverser {
       this._directories = pluginModuleOptions.directories;
   }
 
-  public async traverseDirectories(): Promise<Array<Provider<BasePlugin>>> {
+  public async traverseDirectoriesAsync(): Promise<
+    Array<Provider<BasePlugin>>
+  > {
     const modules = [];
     await bluebirdPromise.mapSeries(
       this._directories,
-      async (parentDirectory) => {
-        const stat = await fs.promises.stat(parentDirectory);
-        if (stat.isDirectory())
-          return await fs.promises
-            .readdir(parentDirectory, { withFileTypes: true })
-            .then((dirents) =>
-              dirents
-                .filter((dirent) => dirent.isDirectory())
-                .map((dirent) => dirent.name)
-                .filter((directoryName) =>
-                  this.isPluginDirectory(parentDirectory, directoryName),
-                ),
-            )
-            .then((directoryNames) =>
-              directoryNames.forEach((directoryName) => {
-                modules.push(
-                  ...this.processDirectory(parentDirectory, directoryName),
-                );
-              }),
-            );
-        return parentDirectory;
+      async (parentDirectoryPath) => {
+        if ((await fs.promises.stat(parentDirectoryPath)).isDirectory())
+          await this.exploreDirectoryAsync(parentDirectoryPath, modules);
       },
     );
     return modules;
+  }
+
+  private async exploreDirectoryAsync(
+    directoryPath: string,
+    modules: Array<Provider<BasePlugin>>,
+  ): Promise<void> {
+    if (this.isPluginDirectory(directoryPath, '')) {
+      modules.push(...this.processDirectory(directoryPath, ''));
+      return;
+    }
+
+    const dirents = await fs.promises.readdir(directoryPath, {
+      withFileTypes: true,
+    });
+
+    for (const dirent of dirents) {
+      if (dirent.isDirectory()) {
+        const subdir = path.join(directoryPath, dirent.name);
+        if (this.isPluginDirectory(directoryPath, dirent.name))
+          modules.push(...this.processDirectory(directoryPath, dirent.name));
+        else await this.exploreDirectoryAsync(subdir, modules);
+      }
+    }
   }
 
   private isPluginDirectory(
@@ -68,10 +76,13 @@ export class PluginTraverser {
   private processDirectory(
     parentDirectory: string,
     directoryName: string,
-  ): Array<BasePlugin> {
-    return this.importModule(
-      this.createModulePath(parentDirectory, directoryName),
-    );
+  ): Provider<BasePlugin>[] {
+    const modulePath = this.createModulePath(parentDirectory, directoryName);
+    const importedModules: BasePlugin[] = this.importModule(modulePath);
+    return importedModules.map((module) => ({
+      provide: module.constructor as Type<BasePlugin>,
+      useClass: module.constructor as Type<BasePlugin>,
+    }));
   }
 
   private packageJsonExists(
