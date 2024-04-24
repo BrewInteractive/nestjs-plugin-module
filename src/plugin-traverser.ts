@@ -29,13 +29,13 @@ export class PluginTraverser {
       this._directories,
       async (parentDirectoryPath) => {
         if ((await fs.promises.stat(parentDirectoryPath)).isDirectory())
-          await this.exploreDirectoryAsync(parentDirectoryPath, modules);
+          await this.explorePluginDirectoryAsync(parentDirectoryPath, modules);
       },
     );
     return modules;
   }
 
-  private async exploreDirectoryAsync(
+  private async explorePluginDirectoryAsync(
     directoryPath: string,
     modules: Array<Provider<BasePlugin>>,
   ): Promise<void> {
@@ -53,7 +53,7 @@ export class PluginTraverser {
         const subdir = path.join(directoryPath, dirent.name);
         if (this.isPluginDirectory(directoryPath, dirent.name))
           modules.push(...this.processDirectory(directoryPath, dirent.name));
-        else await this.exploreDirectoryAsync(subdir, modules);
+        else await this.explorePluginDirectoryAsync(subdir, modules);
       }
     }
   }
