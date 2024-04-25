@@ -51,9 +51,7 @@ export class PluginTraverser {
     for (const dirent of dirents) {
       if (dirent.isDirectory()) {
         const subdir = path.join(directoryPath, dirent.name);
-        if (this.isPluginDirectory(directoryPath, dirent.name))
-          modules.push(...this.processDirectory(directoryPath, dirent.name));
-        else await this.explorePluginDirectoryAsync(subdir, modules);
+        await this.explorePluginDirectoryAsync(subdir, modules);
       }
     }
   }
@@ -77,12 +75,9 @@ export class PluginTraverser {
     parentDirectory: string,
     directoryName: string,
   ): Provider<BasePlugin>[] {
-    const modulePath = this.createModulePath(parentDirectory, directoryName);
-    const importedModules: BasePlugin[] = this.importModule(modulePath);
-    return importedModules.map((module) => ({
-      provide: module.constructor as Type<BasePlugin>,
-      useClass: module.constructor as Type<BasePlugin>,
-    }));
+    return this.importModule(
+      this.createModulePath(parentDirectory, directoryName),
+    );
   }
 
   private packageJsonExists(
@@ -130,7 +125,7 @@ export class PluginTraverser {
       : path.join(dirSrcFolder);
   }
 
-  private importModule(modulePath: string): Array<BasePlugin> {
+  private importModule(modulePath: string): Array<Provider<BasePlugin>> {
     try {
       return Object.values(require(modulePath));
     } catch (error) {

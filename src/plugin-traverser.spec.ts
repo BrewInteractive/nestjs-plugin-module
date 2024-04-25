@@ -33,7 +33,7 @@ describe('PluginTraverser', () => {
     const pluginTraverser = new PluginTraverser(mockPluginModuleOptions);
     const result = await pluginTraverser.traverseDirectoriesAsync();
 
-    expect(result).toHaveLength(34;
+    expect(result).toHaveLength(4);
   });
 
   it('Should traverse directories and import modules from node_modules correctly.', async () => {
