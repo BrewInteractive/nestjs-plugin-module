@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { pluginModule } from '../package.json';
 
 @Injectable()
-export class Fixture2Plugin extends BasePlugin {
+export class PrimaryPlugin extends BasePlugin {
   constructor() {
     super(pluginModule);
   }
