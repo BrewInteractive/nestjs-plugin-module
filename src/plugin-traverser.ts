@@ -20,34 +20,39 @@ export class PluginTraverser {
       this._directories = pluginModuleOptions.directories;
   }
 
-  public async traverseDirectories(): Promise<Array<Provider<BasePlugin>>> {
+  public async traverseDirectoriesAsync(): Promise<
+    Array<Provider<BasePlugin>>
+  > {
     const modules = [];
     await bluebirdPromise.mapSeries(
       this._directories,
-      async (parentDirectory) => {
-        const stat = await fs.promises.stat(parentDirectory);
-        if (stat.isDirectory())
-          return await fs.promises
-            .readdir(parentDirectory, { withFileTypes: true })
-            .then((dirents) =>
-              dirents
-                .filter((dirent) => dirent.isDirectory())
-                .map((dirent) => dirent.name)
-                .filter((directoryName) =>
-                  this.isPluginDirectory(parentDirectory, directoryName),
-                ),
-            )
-            .then((directoryNames) =>
-              directoryNames.forEach((directoryName) => {
-                modules.push(
-                  ...this.processDirectory(parentDirectory, directoryName),
-                );
-              }),
-            );
-        return parentDirectory;
+      async (parentDirectoryPath) => {
+        if ((await fs.promises.stat(parentDirectoryPath)).isDirectory())
+          await this.explorePluginDirectoryAsync(parentDirectoryPath, modules);
       },
     );
     return modules;
+  }
+
+  private async explorePluginDirectoryAsync(
+    directoryPath: string,
+    modules: Array<Provider<BasePlugin>>,
+  ): Promise<void> {
+    if (this.isPluginDirectory(directoryPath, '')) {
+      modules.push(...this.processDirectory(directoryPath, ''));
+      return;
+    }
+
+    const dirents = await fs.promises.readdir(directoryPath, {
+      withFileTypes: true,
+    });
+
+    for (const dirent of dirents) {
+      if (dirent.isDirectory()) {
+        const subdir = path.join(directoryPath, dirent.name);
+        await this.explorePluginDirectoryAsync(subdir, modules);
+      }
+    }
   }
 
   private isPluginDirectory(
@@ -68,7 +73,7 @@ export class PluginTraverser {
   private processDirectory(
     parentDirectory: string,
     directoryName: string,
-  ): Array<BasePlugin> {
+  ): Provider<BasePlugin>[] {
     return this.importModule(
       this.createModulePath(parentDirectory, directoryName),
     );
@@ -119,7 +124,7 @@ export class PluginTraverser {
       : path.join(dirSrcFolder);
   }
 
-  private importModule(modulePath: string): Array<BasePlugin> {
+  private importModule(modulePath: string): Array<Provider<BasePlugin>> {
     try {
       return Object.values(require(modulePath));
     } catch (error) {
