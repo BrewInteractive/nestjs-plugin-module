@@ -2,11 +2,10 @@ import * as bluebirdPromise from 'bluebird';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { Provider, Type } from '@nestjs/common';
-
 import { BasePlugin } from './abstract/base-plugin.plugin';
 import { PluginModuleOptions } from './interfaces/plugin-module-options.interface';
 import { PluginOptions } from './interfaces/plugin-options.interface';
+import { Provider } from '@nestjs/common';
 
 const node_modules = require('node_modules-path');
 
